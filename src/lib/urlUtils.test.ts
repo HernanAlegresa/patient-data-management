@@ -1,4 +1,4 @@
-import { isValidImageUrl, isValidWebsiteUrl, normalizeWebsiteUrl } from './patientUtils';
+import { isValidImageUrl, isValidWebsiteUrl, normalizeWebsiteUrl } from './urlUtils';
 
 describe('isValidImageUrl', () => {
   it('returns true for valid http/https URLs with a proper hostname', () => {

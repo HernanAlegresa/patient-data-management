@@ -1,7 +1,3 @@
-// Returns a parsed URL if the value looks like a navigable http/https address
-// with a proper hostname (has a dot). Prepends https:// for bare domains like
-// "elle-woods.io". Returns null for single words ("linkedin"), garbage, or
-// non-string values.
 function tryParseWebUrl(value: string): URL | null {
   const withProtocol = /^https?:\/\//i.test(value) ? value : `https://${value}`;
   try {
@@ -16,10 +12,9 @@ function tryParseWebUrl(value: string): URL | null {
 }
 
 // Checks whether a value is a valid http/https URL worth trying to render in
-// an <img>. Requires a proper hostname (dot present) for consistency with
-// isValidWebsiteUrl. Does NOT check file extension — CDN avatar URLs rarely
-// carry one; the component's onError handler is the real guard against
-// non-image responses.
+// an <img>. Requires a proper hostname (dot present). Does NOT check file
+// extension — CDN avatar URLs rarely carry one; the component's onError handler
+// is the real guard against non-image responses.
 export function isValidImageUrl(value: unknown): boolean {
   if (typeof value !== 'string' || value === '') return false;
   try {
