@@ -13,15 +13,17 @@ function getInitials(name: string): string {
 interface AvatarProps {
   src: string;
   name: string;
+  size?: 'md' | 'lg';
 }
 
-export function Avatar({ src, name }: AvatarProps) {
+export function Avatar({ src, name, size = 'md' }: AvatarProps) {
   const [imgError, setImgError] = useState(false);
   const showImage = !imgError && isValidImageUrl(src);
   const initials = getInitials(name) || '?';
+  const sizeClass = size === 'lg' ? 'size-16 text-xl' : 'size-10';
 
   return (
-    <div className="size-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-medium shrink-0 overflow-hidden select-none">
+    <div className={`${sizeClass} rounded-full bg-primary/10 text-primary flex items-center justify-center font-medium shrink-0 overflow-hidden select-none`}>
       {showImage ? (
         <img
           src={src}
