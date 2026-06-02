@@ -18,7 +18,7 @@ function getFocusableElements(container: HTMLElement | null): HTMLElement[] {
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  title: string;
+  title: ReactNode;
   children: ReactNode;
 }
 
