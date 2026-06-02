@@ -1,12 +1,17 @@
 import { useState } from 'react';
-import { usePatients } from '../hooks/usePatients';
 import { PatientCard } from './PatientCard';
 import { PatientDetailModal } from './PatientDetailModal';
 import { Spinner } from '../../../components/Spinner';
 import type { Patient } from '../types/patient';
 
-export function PatientList() {
-  const { patients, loading, error } = usePatients();
+interface PatientListProps {
+  patients: Patient[];
+  loading: boolean;
+  error: string | null;
+  onEdit: (patient: Patient) => void;
+}
+
+export function PatientList({ patients, loading, error, onEdit }: PatientListProps) {
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
 
   if (loading) {
@@ -37,6 +42,7 @@ export function PatientList() {
             key={patient.id}
             patient={patient}
             onViewDetails={() => setSelectedPatient(patient)}
+            onEdit={onEdit}
           />
         ))}
       </ul>
