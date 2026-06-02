@@ -1,20 +1,11 @@
 import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import type { Patient } from '../types/patient';
+import { patientFormSchema, type PatientFormData } from '../types/patientForm';
 import { Modal } from '../../../components/Modal';
 import { Input } from '../../../components/Input';
 import { Textarea } from '../../../components/Textarea';
-
-const patientFormSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(100),
-  avatar: z.string().url('Must be a valid URL').or(z.literal('')),
-  website: z.string().url('Must be a valid URL').or(z.literal('')),
-  description: z.string().max(500, 'Max 500 characters'),
-});
-
-type PatientFormData = z.infer<typeof patientFormSchema>;
 
 const EMPTY_FORM: PatientFormData = {
   name: '',
@@ -27,6 +18,7 @@ interface PatientFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   patient?: Patient;
+  onSubmit: (data: PatientFormData) => void;
 }
 
 function AddIcon() {
@@ -58,7 +50,7 @@ function EditIcon() {
   );
 }
 
-export function PatientFormModal({ isOpen, onClose, patient }: PatientFormModalProps) {
+export function PatientFormModal({ isOpen, onClose, patient, onSubmit }: PatientFormModalProps) {
   const isEditMode = patient !== undefined;
 
   const {
@@ -85,8 +77,8 @@ export function PatientFormModal({ isOpen, onClose, patient }: PatientFormModalP
     );
   }, [patient, isOpen, reset]);
 
-  function onSubmit(data: PatientFormData) {
-    console.log('submit', data);
+  function handleFormSubmit(data: PatientFormData) {
+    onSubmit(data);
     onClose();
   }
 
@@ -110,7 +102,7 @@ export function PatientFormModal({ isOpen, onClose, patient }: PatientFormModalP
         </span>
       }
     >
-      <form onSubmit={handleSubmit(onSubmit)} noValidate>
+      <form onSubmit={handleSubmit(handleFormSubmit)} noValidate>
         {/* Fields */}
         <div className="flex flex-col gap-5 px-5 pb-6 pt-5">
           {/* Name — required, always full width */}
