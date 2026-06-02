@@ -1,10 +1,11 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { usePatients } from './features/patients/hooks/usePatients';
 import { PatientList } from './features/patients/components/PatientList';
 import { PatientFormModal } from './features/patients/components/PatientFormModal';
 import { Toast } from './components/Toast';
 import type { Patient } from './features/patients/types/patient';
 import type { PatientFormData } from './features/patients/types/patientForm';
+import logo from './assets/logo.png';
 
 interface ToastState {
   message: string;
@@ -17,6 +18,19 @@ export default function App() {
   const [formOpen, setFormOpen] = useState(false);
   const [editingPatient, setEditingPatient] = useState<Patient | undefined>(undefined);
   const [toast, setToast] = useState<ToastState | null>(null);
+  const [scrolled, setScrolled] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setScrolled(!entry.isIntersecting),
+      { threshold: 0 },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, []);
 
   function openAddForm() {
     setEditingPatient(undefined);
@@ -47,10 +61,44 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-surface">
-      <header className="bg-surface-elevated border-b border-border px-6 py-4">
-        <h1 className="text-xl font-semibold text-content">Patient Data Management</h1>
+    <div className="min-h-screen bg-background">
+      <header
+        className={[
+          'sticky top-0 z-[60] bg-bark px-6 py-4 transition-shadow duration-200',
+          scrolled ? 'shadow-resting' : '',
+        ].join(' ')}
+      >
+        {/*
+          Mobile (flex): logo mark on the left, title to its right.
+          Desktop md+ (grid 1fr auto 1fr): title in left col, logo truly
+          centered in viewport, right col reserved for future use.
+          DOM order: logo first so mobile flex renders it left naturally;
+          CSS order reversal places it in col 2 on desktop.
+        */}
+        <div className="flex items-center gap-3 md:grid md:grid-cols-[1fr_auto_1fr] md:gap-4">
+          {/*
+            Visual size = size-14 (56px), layout slot = 36px via -my-2.5.
+            The image overflows its flex box by 10px top/bottom into the
+            header's 16px padding zone, so it appears larger without
+            pushing the header height past --header-height (4.25rem).
+          */}
+          <img
+            src={logo}
+            alt=""
+            aria-hidden="true"
+            width={56}
+            height={56}
+            className="size-14 shrink-0 -my-2.5 select-none md:order-1 md:justify-self-start"
+          />
+          <h1 className="flex-1 min-w-0 truncate text-center text-base md:flex-none md:text-page-title font-semibold text-background md:order-2 md:justify-self-center">
+            Patient Data Management
+          </h1>
+          <div className="hidden md:block md:order-3" aria-hidden="true" />
+        </div>
       </header>
+
+      {/* Scroll sentinel — exits viewport on first scroll, triggering the header shadow */}
+      <div ref={sentinelRef} className="h-0" aria-hidden="true" />
 
       <main className="max-w-[var(--width-container)] mx-auto px-4 py-6 pb-28">
         <PatientList
@@ -61,9 +109,9 @@ export default function App() {
         />
       </main>
 
-      {/* Gradient scrim: fades list content out before the FAB */}
+      {/* Gradient scrim: fades list content before the FAB */}
       <div
-        className="fixed bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-surface to-transparent pointer-events-none z-30"
+        className="fixed bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-background to-transparent pointer-events-none z-30"
         aria-hidden="true"
       />
 
@@ -72,7 +120,8 @@ export default function App() {
         type="button"
         onClick={openAddForm}
         aria-label="Add patient"
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white shadow-lg backdrop-blur-sm transition-colors hover:bg-primary-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        style={{ right: 'calc(1.5rem + var(--scrollbar-width, 0px))' }}
+        className="fixed bottom-6 z-40 flex items-center gap-2 rounded-full bg-action px-5 py-3 text-sm font-semibold text-white shadow-elevated backdrop-blur-sm transition-[background-color,border-color,right] hover:bg-action-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-action"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

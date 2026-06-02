@@ -9,6 +9,7 @@ interface InputProps {
   type?: string;
   placeholder?: string;
   disabled?: boolean;
+  required?: boolean;
 }
 
 export function Input({
@@ -20,11 +21,17 @@ export function Input({
   type = 'text',
   placeholder,
   disabled,
+  required,
 }: InputProps) {
   return (
     <div className="flex flex-col gap-1.5">
       <label htmlFor={id} className="text-sm font-medium text-content">
         {label}
+        {required && (
+          <span className="ml-0.5 text-error" aria-hidden="true">
+            *
+          </span>
+        )}
       </label>
       <input
         id={id}
@@ -35,11 +42,12 @@ export function Input({
         disabled={disabled}
         aria-invalid={error ? 'true' : undefined}
         aria-describedby={error ? `${id}-error` : undefined}
+        aria-required={required || undefined}
         className={[
           'w-full rounded-btn border px-3 py-2 text-sm text-content',
-          'bg-surface-elevated placeholder:text-muted',
+          'bg-surface placeholder:text-muted',
           'transition-colors duration-150',
-          'focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary',
+          'focus:outline-none focus:ring-2 focus:ring-identity focus:border-identity',
           'disabled:cursor-not-allowed disabled:opacity-50',
           error
             ? 'border-error bg-error/5'

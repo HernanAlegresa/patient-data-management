@@ -20,7 +20,6 @@ interface PatientDetailModalProps {
   patient: Patient | null;
   isOpen: boolean;
   onClose: () => void;
-  onEdit?: () => void;
 }
 
 export function PatientDetailModal({
@@ -29,22 +28,31 @@ export function PatientDetailModal({
   onClose,
 }: PatientDetailModalProps) {
   const normalizedUrl = patient ? normalizeWebsiteUrl(patient.website) : null;
+  const hasDetails = Boolean(patient?.description) || normalizedUrl !== null;
+
+  const titleNode = patient ? (
+    <div className="flex items-center gap-3 min-w-0">
+      <Avatar src={patient.avatar} name={patient.name} alt="" />
+      <div className="min-w-0">
+        <p className="truncate text-base font-semibold text-content">
+          {patient.name || '—'}
+        </p>
+        <p className="truncate text-sm text-muted">
+          Added {formatCreatedAt(patient.createdAt)}
+        </p>
+      </div>
+    </div>
+  ) : (
+    'Patient Details'
+  );
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={patient?.name || 'Patient Details'}>
+    <Modal isOpen={isOpen} onClose={onClose} title={titleNode}>
       {patient && (
         <div className="flex flex-col gap-6 p-5">
-          <div className="flex items-center gap-4">
-            <Avatar src={patient.avatar} name={patient.name} size="lg" />
-            <div className="min-w-0">
-              <p className="text-xl font-semibold text-content">{patient.name || '—'}</p>
-              <p className="text-sm text-muted">Added {formatCreatedAt(patient.createdAt)}</p>
-            </div>
-          </div>
-
           {patient.description && (
             <div>
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-bark/80">
                 Description
               </p>
               <p className="leading-relaxed text-content">{patient.description}</p>
@@ -53,18 +61,24 @@ export function PatientDetailModal({
 
           {normalizedUrl !== null && (
             <div>
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-bark/80">
                 Website
               </p>
               <a
                 href={normalizedUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="break-all text-primary hover:underline"
+                className="break-all text-identity hover:underline"
               >
                 {patient.website}
               </a>
             </div>
+          )}
+
+          {!hasDetails && (
+            <p className="text-sm text-muted italic">
+              No additional details available.
+            </p>
           )}
         </div>
       )}
