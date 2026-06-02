@@ -11,7 +11,7 @@ function PencilIcon() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      className="size-4"
+      className="size-5"
       viewBox="0 0 20 20"
       fill="currentColor"
       aria-hidden="true"
@@ -23,41 +23,31 @@ function PencilIcon() {
 
 export function PatientCard({ patient, onViewDetails, onEdit }: PatientCardProps) {
   return (
-    <li className="bg-surface-elevated border border-border rounded-card p-4 flex items-center gap-4">
-      <Avatar src={patient.avatar} name={patient.name} />
-      <div className="flex-1 min-w-0">
-        <p className="font-semibold text-content truncate">{patient.name || '—'}</p>
-        <p className="text-sm text-muted line-clamp-2">
-          {patient.description || 'No description provided'}
-        </p>
-      </div>
-      <button
-        type="button"
-        onClick={() => onEdit(patient)}
-        aria-label={`Edit ${patient.name}`}
-        className="shrink-0 p-1 text-muted hover:text-primary rounded-btn transition-colors"
-      >
-        <PencilIcon />
-      </button>
+    <li className="group bg-surface border border-border rounded-card shadow-resting flex items-stretch transition-all duration-150 hover:border-bark hover:bg-surface-bright hover:shadow-elevated">
       <button
         type="button"
         onClick={onViewDetails}
         aria-label={`View details for ${patient.name}`}
-        className="shrink-0 p-1 text-muted hover:text-primary rounded-btn transition-colors"
+        className="flex flex-1 items-center gap-4 p-4 text-left min-w-0 rounded-l-[var(--radius-card)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-identity"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="size-5"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            fillRule="evenodd"
-            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-            clipRule="evenodd"
-          />
-        </svg>
+        <Avatar src={patient.avatar} name={patient.name} />
+        <div className="flex-1 min-w-0">
+          <p className="text-card-title font-semibold text-content truncate">{patient.name || '—'}</p>
+          <p className="text-label text-muted line-clamp-2">
+            {patient.description || 'No description provided'}
+          </p>
+        </div>
+      </button>
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onEdit(patient);
+        }}
+        aria-label={`Edit ${patient.name}`}
+        className="shrink-0 flex items-center px-4 rounded-r-[var(--radius-card)] text-identity/60 transition-[color,transform] duration-150 hover:text-identity-hover hover:scale-125 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-identity"
+      >
+        <PencilIcon />
       </button>
     </li>
   );

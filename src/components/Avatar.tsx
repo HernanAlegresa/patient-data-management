@@ -13,26 +13,25 @@ function getInitials(name: string): string {
 interface AvatarProps {
   src: string;
   name: string;
-  size?: 'md' | 'lg';
+  alt?: string;
 }
 
-export function Avatar({ src, name, size = 'md' }: AvatarProps) {
+export function Avatar({ src, name, alt = name }: AvatarProps) {
   const [imgError, setImgError] = useState(false);
   const showImage = !imgError && isValidImageUrl(src);
   const initials = getInitials(name) || '?';
-  const sizeClass = size === 'lg' ? 'size-16 text-xl' : 'size-10';
 
   return (
-    <div className={`${sizeClass} rounded-full bg-primary/10 text-primary flex items-center justify-center font-medium shrink-0 overflow-hidden select-none`}>
+    <div className="size-10 rounded-full bg-identity-tint text-identity flex items-center justify-center font-medium shrink-0 overflow-hidden select-none">
       {showImage ? (
         <img
           src={src}
-          alt={name}
+          alt={alt}
           className="w-full h-full object-cover"
           onError={() => setImgError(true)}
         />
       ) : (
-        <span aria-label={`${name} initials`}>{initials}</span>
+        <span aria-label={alt ? `${name} initials` : undefined} aria-hidden={!alt}>{initials}</span>
       )}
     </div>
   );

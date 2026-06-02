@@ -2,7 +2,7 @@ export function Spinner() {
   return (
     <div role="status" aria-label="Loading">
       <svg
-        className="animate-spin size-8 text-primary"
+        className="animate-spin size-8 text-identity"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"

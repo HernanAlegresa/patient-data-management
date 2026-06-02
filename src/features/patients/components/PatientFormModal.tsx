@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Patient } from '../types/patient';
@@ -21,11 +21,11 @@ interface PatientFormModalProps {
   onSubmit: (data: PatientFormData) => void;
 }
 
-function AddIcon() {
+function AddIcon({ className }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      className="size-4"
+      className={className}
       viewBox="0 0 20 20"
       fill="currentColor"
       aria-hidden="true"
@@ -36,11 +36,40 @@ function AddIcon() {
   );
 }
 
-function EditIcon() {
+/*
+  Centered title for modal headers. The text lands at the Modal header's
+  TRUE visual midpoint (not the title slot's midpoint, which sits ~22px
+  to the left of the header center because of the X close button on the
+  right side of the slot).
+
+  The left column width (2.75rem = 44px) mirrors the visual weight of
+  the X close button + gap on the right side of the slot:
+    - Close button: size-5 svg + p-1.5 padding = 32px
+    - Header gap-3 between slot and close button = 12px
+    - Total right-side weight = 44px
+
+  With the icon column matching that 44px, the 1fr text column is
+  geometrically symmetric to the area between the slot's right edge
+  and the X button, so text-center inside it lands exactly at the
+  header's midline.
+
+  NOTE: this mirrors dimensions defined in Modal.tsx. If the close
+  button size or the header's gap-3 change there, update this value.
+*/
+function CenteredTitle({ icon, text }: { icon: ReactNode; text: string }) {
+  return (
+    <span className="grid w-full grid-cols-[2.75rem_1fr] items-center text-lg font-semibold text-content">
+      <span className="justify-self-start">{icon}</span>
+      <span className="text-center">{text}</span>
+    </span>
+  );
+}
+
+function EditIcon({ className }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      className="size-4"
+      className={className}
       viewBox="0 0 20 20"
       fill="currentColor"
       aria-hidden="true"
@@ -87,19 +116,17 @@ export function PatientFormModal({ isOpen, onClose, patient, onSubmit }: Patient
       isOpen={isOpen}
       onClose={onClose}
       title={
-        <span className="flex items-center gap-2.5">
-          <span
-            className={[
-              'flex items-center justify-center rounded-full p-1.5',
-              isEditMode
-                ? 'bg-primary/10 text-primary'
-                : 'bg-success/10 text-success',
-            ].join(' ')}
-          >
-            {isEditMode ? <EditIcon /> : <AddIcon />}
-          </span>
-          {isEditMode ? 'Edit Patient' : 'Add Patient'}
-        </span>
+        isEditMode ? (
+          <CenteredTitle
+            icon={<EditIcon className="size-6 text-identity" />}
+            text="Edit Patient"
+          />
+        ) : (
+          <CenteredTitle
+            icon={<AddIcon className="size-6 text-action" />}
+            text="Add Patient"
+          />
+        )
       }
     >
       <form onSubmit={handleSubmit(handleFormSubmit)} noValidate>
@@ -112,7 +139,8 @@ export function PatientFormModal({ isOpen, onClose, patient, onSubmit }: Patient
             render={({ field, fieldState }) => (
               <Input
                 id="patient-name"
-                label="Name *"
+                label="Name"
+                required
                 value={field.value}
                 onChange={(e) => field.onChange(e)}
                 error={fieldState.error?.message}
@@ -176,14 +204,14 @@ export function PatientFormModal({ isOpen, onClose, patient, onSubmit }: Patient
           <button
             type="button"
             onClick={onClose}
-            className="rounded-btn px-4 py-2 text-sm font-medium text-muted transition-colors hover:bg-surface hover:text-content"
+            className="rounded-btn px-4 py-2 text-sm font-medium text-muted transition-colors hover:bg-background hover:text-content"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="rounded-btn bg-primary px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-btn bg-action px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-action-hover disabled:cursor-not-allowed disabled:opacity-60"
           >
             Save
           </button>
