@@ -47,4 +47,9 @@ describe('patientApiSchema — shape normalization', () => {
     const result = patientApiSchema.safeParse(null);
     expect(result.success).toBe(false);
   });
+
+  it('trims surrounding whitespace from name', () => {
+    const result = patientApiSchema.parse({ ...base, name: '  Donna Doe  ' });
+    expect(result.name).toBe('Donna Doe');
+  });
 });

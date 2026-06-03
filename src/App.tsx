@@ -5,6 +5,7 @@ import { PatientFormModal } from './features/patients/components/PatientFormModa
 import { Toast } from './components/Toast';
 import { SearchInput } from './components/SearchInput';
 import { normalizeForSearch } from './lib/searchUtils';
+import { sortPatients, type SortOrder } from './lib/sortUtils';
 import type { Patient } from './features/patients/types/patient';
 import type { PatientFormData } from './features/patients/types/patientForm';
 import logo from './assets/logo.png';
@@ -29,12 +30,18 @@ export default function App() {
     return () => window.removeEventListener('scroll', handler);
   }, []);
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('name');
 
   const filteredPatients = useMemo(() => {
     if (!searchTerm.trim()) return patients;
     const normalized = normalizeForSearch(searchTerm.trim());
     return patients.filter((p) => normalizeForSearch(p.name).includes(normalized));
   }, [patients, searchTerm]);
+
+  const sortedPatients = useMemo(
+    () => sortPatients(filteredPatients, sortOrder),
+    [filteredPatients, sortOrder],
+  );
 
   function openAddForm() {
     setEditingPatient(undefined);
@@ -102,16 +109,45 @@ export default function App() {
         <div className="max-w-[var(--width-container)] mx-auto px-4 pt-4 pb-3">
           <SearchInput value={searchTerm} onChange={setSearchTerm} />
           {!loading && !error && (
-            <p className="mt-3 text-label text-muted" aria-live="polite" aria-atomic="true">
-              {filteredPatients.length === 1 ? '1 patient' : `${filteredPatients.length} patients`}
-            </p>
+            <div className="mt-3 flex items-center justify-between gap-2">
+              <p className="text-label text-muted" aria-live="polite" aria-atomic="true">
+                {filteredPatients.length === 1
+                  ? '1 patient'
+                  : `${filteredPatients.length} patients`}
+              </p>
+              <div className="relative flex items-center">
+                <select
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value as SortOrder)}
+                  aria-label="Sort patients"
+                  className="appearance-none cursor-pointer rounded-btn border border-border bg-surface py-1.5 pl-3 pr-8 text-label text-content transition-colors duration-150 focus:border-identity focus:outline-none focus:ring-2 focus:ring-identity hover:border-muted"
+                >
+                  <option value="name">Name (A–Z)</option>
+                  <option value="newest">Newest first</option>
+                  <option value="oldest">Oldest first</option>
+                </select>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className="pointer-events-none absolute right-2.5 size-3.5 text-muted"
+                  aria-hidden="true"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+            </div>
           )}
         </div>
       </div>
 
       <main className="max-w-[var(--width-container)] mx-auto px-4 pt-1 pb-28">
         <PatientList
-          patients={filteredPatients}
+          patients={sortedPatients}
           loading={loading}
           error={error}
           onEdit={openEditForm}
