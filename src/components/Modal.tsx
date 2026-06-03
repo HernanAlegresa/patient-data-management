@@ -114,14 +114,12 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
             consumers compose richer headers (e.g. avatar + name + subtitle)
             without fighting opinionated defaults.
           */}
-          <div
+          <h2
             id={titleId}
-            role="heading"
-            aria-level={2}
             className="min-w-0 flex-1"
           >
             {title}
-          </div>
+          </h2>
           <button
             type="button"
             onClick={onClose}
