@@ -86,10 +86,11 @@ export function PatientFormModal({ isOpen, onClose, patient, onSubmit }: Patient
     control,
     handleSubmit,
     reset,
-    formState: { isSubmitting },
+    formState: { isSubmitting, isValid, isDirty },
   } = useForm<PatientFormData>({
     resolver: zodResolver(patientFormSchema),
     defaultValues: EMPTY_FORM,
+    mode: 'onChange',
   });
 
   useEffect(() => {
@@ -210,8 +211,8 @@ export function PatientFormModal({ isOpen, onClose, patient, onSubmit }: Patient
           </button>
           <button
             type="submit"
-            disabled={isSubmitting}
-            className="rounded-btn bg-action px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-action-hover disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={isEditMode ? (!isValid || !isDirty || isSubmitting) : (!isValid || isSubmitting)}
+            className="rounded-btn bg-action px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-action-hover disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-action"
           >
             Save
           </button>

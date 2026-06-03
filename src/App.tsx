@@ -69,11 +69,9 @@ export default function App() {
         ].join(' ')}
       >
         {/*
-          Mobile (flex): logo mark on the left, title to its right.
-          Desktop md+ (grid 1fr auto 1fr): title in left col, logo truly
-          centered in viewport, right col reserved for future use.
-          DOM order: logo first so mobile flex renders it left naturally;
-          CSS order reversal places it in col 2 on desktop.
+          Mobile (flex): title on the left (order-1), logo on the right (order-2).
+          Desktop md+ (grid 1fr auto 1fr): logo in col 1 (md:order-1), title
+          truly centered in col 2 (md:order-2), right col reserved for future use.
         */}
         <div className="flex items-center gap-3 md:grid md:grid-cols-[1fr_auto_1fr] md:gap-4">
           {/*
@@ -88,9 +86,9 @@ export default function App() {
             aria-hidden="true"
             width={56}
             height={56}
-            className="size-14 shrink-0 -my-2.5 select-none md:order-1 md:justify-self-start"
+            className="size-14 shrink-0 -my-2.5 select-none order-2 md:order-1 md:justify-self-start"
           />
-          <h1 className="flex-1 min-w-0 truncate text-center text-base md:flex-none md:text-page-title font-semibold text-background md:order-2 md:justify-self-center">
+          <h1 className="flex-1 min-w-0 truncate order-1 text-left text-base md:flex-none md:text-page-title font-semibold text-background md:order-2 md:text-center md:justify-self-center">
             Patient Data Management
           </h1>
           <div className="hidden md:block md:order-3" aria-hidden="true" />
