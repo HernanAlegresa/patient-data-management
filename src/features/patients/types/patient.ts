@@ -6,7 +6,7 @@ import { z } from 'zod';
 export const patientApiSchema = z.object({
   id: z.string().catch(''),
   createdAt: z.string().catch(''),
-  name: z.string().catch(''),
+  name: z.string().catch('').transform((s) => s.trim()),
   avatar: z.string().catch(''),
   description: z.string().catch(''),
   website: z.string().catch(''),
