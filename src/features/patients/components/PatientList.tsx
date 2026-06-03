@@ -9,9 +9,11 @@ interface PatientListProps {
   loading: boolean;
   error: string | null;
   onEdit: (patient: Patient) => void;
+  searchTerm?: string;
+  onClearSearch: () => void;
 }
 
-export function PatientList({ patients, loading, error, onEdit }: PatientListProps) {
+export function PatientList({ patients, loading, error, onEdit, searchTerm, onClearSearch }: PatientListProps) {
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
 
   if (loading) {
@@ -31,6 +33,20 @@ export function PatientList({ patients, loading, error, onEdit }: PatientListPro
   }
 
   if (patients.length === 0) {
+    if (searchTerm) {
+      return (
+        <div role="status" className="flex flex-col items-center gap-4 py-16 text-center">
+          <p className="text-muted">No patients match your search.</p>
+          <button
+            type="button"
+            onClick={onClearSearch}
+            className="rounded-btn border border-border px-4 py-2 text-sm text-content transition-colors hover:border-muted hover:bg-surface"
+          >
+            Show all patients
+          </button>
+        </div>
+      );
+    }
     return <p role="status" className="text-muted text-center py-16">No patients found.</p>;
   }
 
