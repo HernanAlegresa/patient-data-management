@@ -2,7 +2,7 @@ function tryParseWebUrl(value: string): URL | null {
   const withProtocol = /^https?:\/\//i.test(value) ? value : `https://${value}`;
   try {
     const url = new URL(withProtocol);
-    if ((url.protocol === 'http:' || url.protocol === 'https:') && url.hostname.includes('.')) {
+    if ((url.protocol === 'http:' || url.protocol === 'https:') && /^[^.]+\.[^.]+/.test(url.hostname)) {
       return url;
     }
     return null;

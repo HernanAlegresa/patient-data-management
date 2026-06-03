@@ -46,6 +46,12 @@ describe('isValidWebsiteUrl', () => {
     expect(isValidWebsiteUrl('')).toBe(false);
     expect(isValidWebsiteUrl(null)).toBe(false);
   });
+
+  it('returns false for degenerate inputs with no real hostname label', () => {
+    expect(isValidWebsiteUrl('http://.com')).toBe(false);
+    expect(isValidWebsiteUrl('https://')).toBe(false);
+    expect(isValidWebsiteUrl('http://localhost')).toBe(false);
+  });
 });
 
 describe('normalizeWebsiteUrl', () => {
