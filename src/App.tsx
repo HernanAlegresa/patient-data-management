@@ -46,17 +46,15 @@ export default function App() {
     setFormOpen(false);
   }
 
+  const dismissToast = useCallback(() => setToast(null), []);
+
   function handleFormSubmit(data: PatientFormData) {
-    try {
-      if (editingPatient) {
-        editPatient(editingPatient.id, data);
-        setToast({ message: 'Patient updated.', type: 'success' });
-      } else {
-        addPatient(data);
-        setToast({ message: 'Patient added.', type: 'success' });
-      }
-    } catch {
-      setToast({ message: 'Something went wrong.', type: 'error' });
+    if (editingPatient) {
+      editPatient(editingPatient.id, data);
+      setToast({ message: 'Patient updated.', type: 'success' });
+    } else {
+      addPatient(data);
+      setToast({ message: 'Patient added.', type: 'success' });
     }
   }
 
@@ -148,7 +146,7 @@ export default function App() {
         <Toast
           message={toast.message}
           type={toast.type}
-          onDismiss={() => setToast(null)}
+          onDismiss={dismissToast}
         />
       )}
     </div>

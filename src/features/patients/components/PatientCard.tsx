@@ -40,10 +40,7 @@ export function PatientCard({ patient, onViewDetails, onEdit }: PatientCardProps
       </button>
       <button
         type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          onEdit(patient);
-        }}
+        onClick={() => onEdit(patient)}
         aria-label={`Edit ${patient.name}`}
         className="shrink-0 flex items-center px-4 rounded-r-[var(--radius-card)] text-identity/60 transition-[color,transform] duration-150 hover:text-identity-hover hover:scale-125 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-identity"
       >

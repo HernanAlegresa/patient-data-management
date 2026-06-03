@@ -31,7 +31,7 @@ export function PatientList({ patients, loading, error, onEdit }: PatientListPro
   }
 
   if (patients.length === 0) {
-    return <p className="text-muted text-center py-16">No patients found.</p>;
+    return <p role="status" className="text-muted text-center py-16">No patients found.</p>;
   }
 
   return (
