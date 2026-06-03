@@ -36,6 +36,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
     // Measure before hiding overflow; afterwards the scrollbar is gone and
     // the measurement would return 0.
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    document.documentElement.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
     if (scrollbarWidth > 0) {
       // Prevent content reflow when scrollbar disappears.
@@ -47,6 +48,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
     }
     getFocusableElements(dialogRef.current)[0]?.focus();
     return () => {
+      document.documentElement.style.overflow = '';
       document.body.style.overflow = '';
       document.body.style.paddingRight = '';
       document.documentElement.style.removeProperty('--scrollbar-width');

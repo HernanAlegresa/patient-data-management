@@ -1,6 +1,12 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/plus-jakarta-sans';
 
+@layer base {
+  html {
+    scrollbar-gutter: stable;
+  }
+}
+
 @theme {
   /* ── Colors ─────────────────────────────────────── */
   --color-bark: #4A4031;

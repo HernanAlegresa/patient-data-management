@@ -1,8 +1,10 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { usePatients } from './features/patients/hooks/usePatients';
 import { PatientList } from './features/patients/components/PatientList';
 import { PatientFormModal } from './features/patients/components/PatientFormModal';
 import { Toast } from './components/Toast';
+import { SearchInput } from './components/SearchInput';
+import { normalizeForSearch } from './lib/searchUtils';
 import type { Patient } from './features/patients/types/patient';
 import type { PatientFormData } from './features/patients/types/patientForm';
 import logo from './assets/logo.png';
@@ -19,18 +21,20 @@ export default function App() {
   const [editingPatient, setEditingPatient] = useState<Patient | undefined>(undefined);
   const [toast, setToast] = useState<ToastState | null>(null);
   const [scrolled, setScrolled] = useState(false);
-  const sentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => setScrolled(!entry.isIntersecting),
-      { threshold: 0 },
-    );
-    observer.observe(sentinel);
-    return () => observer.disconnect();
+    const handler = () => setScrolled(window.scrollY > 0);
+    handler();
+    window.addEventListener('scroll', handler, { passive: true });
+    return () => window.removeEventListener('scroll', handler);
   }, []);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredPatients = useMemo(() => {
+    if (!searchTerm.trim()) return patients;
+    const normalized = normalizeForSearch(searchTerm.trim());
+    return patients.filter((p) => normalizeForSearch(p.name).includes(normalized));
+  }, [patients, searchTerm]);
 
   function openAddForm() {
     setEditingPatient(undefined);
@@ -59,10 +63,10 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="flex min-h-dvh flex-col bg-background">
       <header
         className={[
-          'sticky top-0 z-[60] bg-bark px-6 py-4 transition-shadow duration-200',
+          'sticky top-0 shrink-0 z-[60] bg-bark px-6 py-4 transition-shadow duration-200',
           scrolled ? 'shadow-resting' : '',
         ].join(' ')}
       >
@@ -93,15 +97,26 @@ export default function App() {
         </div>
       </header>
 
-      {/* Scroll sentinel — exits viewport on first scroll, triggering the header shadow */}
-      <div ref={sentinelRef} className="h-0" aria-hidden="true" />
+      {/* Search + count — sticks just below the header as the page scrolls */}
+      <div className="sticky top-[var(--header-height)] z-10 shrink-0 bg-background">
+        <div className="max-w-[var(--width-container)] mx-auto px-4 pt-4 pb-3">
+          <SearchInput value={searchTerm} onChange={setSearchTerm} />
+          {!loading && !error && (
+            <p className="mt-3 text-label text-muted" aria-live="polite" aria-atomic="true">
+              {filteredPatients.length === 1 ? '1 patient' : `${filteredPatients.length} patients`}
+            </p>
+          )}
+        </div>
+      </div>
 
-      <main className="max-w-[var(--width-container)] mx-auto px-4 py-6 pb-28">
+      <main className="max-w-[var(--width-container)] mx-auto px-4 pt-1 pb-28">
         <PatientList
-          patients={patients}
+          patients={filteredPatients}
           loading={loading}
           error={error}
           onEdit={openEditForm}
+          searchTerm={searchTerm.trim() || undefined}
+          onClearSearch={() => setSearchTerm('')}
         />
       </main>
 

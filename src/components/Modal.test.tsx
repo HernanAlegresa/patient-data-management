@@ -100,6 +100,36 @@ describe('Modal', () => {
     expect(betaBtn).toHaveFocus();
   });
 
+  it('sets overflow hidden on both body and documentElement when open', () => {
+    render(
+      <Modal isOpen onClose={() => {}} title="Test">
+        <p>Content</p>
+      </Modal>,
+    );
+    expect(document.body.style.overflow).toBe('hidden');
+    expect(document.documentElement.style.overflow).toBe('hidden');
+  });
+
+  it('restores overflow on both body and documentElement when closed', async () => {
+    function Wrapper() {
+      const [open, setOpen] = useState(false);
+      return (
+        <>
+          <button onClick={() => setOpen(true)}>Open</button>
+          <Modal isOpen={open} onClose={() => setOpen(false)} title="Test">
+            <p>Content</p>
+          </Modal>
+        </>
+      );
+    }
+    render(<Wrapper />);
+    await userEvent.click(screen.getByRole('button', { name: 'Open' }));
+    expect(document.documentElement.style.overflow).toBe('hidden');
+    await userEvent.keyboard('{Escape}');
+    expect(document.documentElement.style.overflow).toBe('');
+    expect(document.body.style.overflow).toBe('');
+  });
+
   it('restores focus to the trigger element when closed', async () => {
     const user = userEvent.setup();
 
